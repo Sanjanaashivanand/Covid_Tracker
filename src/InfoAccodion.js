@@ -1,38 +1,49 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/styles';
 import { ExpandMore } from '@material-ui/icons';
 import {Typography, Accordion,AccordionSummary, AccordionDetails  } from '@material-ui/core';
+import numeral from 'numeral';
+import './InfoAccodion.css'
 
-const Style = makeStyles({
-    title: {
-        background: 'rgb(238,239,247)',
-        textAlign: 'center',
-    },
-    AccordionDetailsBox: {
-        display: 'flex',
-        justifyContent: 'center'
-    }
-})
-
-export default function InfoAccodion({title, sub_title, total}) {
-    const classes = Style();
+export default function InfoAccodion({title, sub_title, total, left_heading, right_heading, right_total}) {
     return (
-        <div className={classes.root}>
+        <div className="main">
             <Accordion >
-            <AccordionSummary className={classes.title} expandIcon={<ExpandMore />}>
-                {title}
-            </AccordionSummary>
-            <AccordionDetails className={classes.AccordionDetailsBox}>
-                <div>
-                    <Typography className="AccordionSubTitle" variant="h4" align="center">
-                        {total}
-                    </Typography>
-                    <Typography className="AccordionTotal" variant="h5" align="center">
-                        {sub_title}
-                    </Typography>
-                </div>
-            </AccordionDetails>
-        </Accordion>
+                <AccordionSummary className="heading" expandIcon={<ExpandMore />}>
+                    {title}
+                </AccordionSummary>
+
+                <AccordionDetails>
+                    <div className="info">
+                        <Typography className="AccordionSubTitle" variant="h4" align="center">
+                        {numeral(total).format("0,0")}
+                        </Typography>
+                        <Typography className="AccordionTotal" variant="h5" align="center">
+                            {sub_title}
+                        </Typography>
+                    </div>
+                </AccordionDetails>
+
+                <AccordionDetails>
+                    <div className="moreInfo">
+                            <div className="left">
+                                <Typography variant="h5" align="center">
+                                    {numeral(total - right_total).format("0,0")}
+                                </Typography>
+                                <Typography className="AccordionTotal" variant="h6" align="center">
+                                    {left_heading}
+                                </Typography>
+                            </div>
+                            <div className="right">
+                                <Typography variant="h5" align="center">
+                                    {numeral(right_total).format("0,0")}
+                                </Typography>
+                                <Typography className="AccordionTotal" variant="h6" align="center">
+                                    {right_heading}
+                                </Typography>
+                            </div>
+                        </div>
+                </AccordionDetails>
+            </Accordion>
         </div>
         
     )

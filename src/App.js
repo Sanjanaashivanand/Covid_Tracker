@@ -6,7 +6,8 @@ import Table from './Table';
 import Map from './Map';
 import LineGraph from './LineGraph';
 import './App.css';
-import { sortData } from './util';
+import numeral from "numeral";
+import { sortData,prettyPrintStat } from './util';
 import "leaflet/dist/leaflet.css";
 
 
@@ -17,6 +18,7 @@ function App() {
   const [countryInfo, setCountryInfo] = useState({});
   const [mapCountries, setMapCountries] = useState([]);
   const [tableData, setTableData] = useState([]);
+  const [casesType, setCasesType] = useState("cases");
   const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796});
   const [mapZoom, setMapZoom] = useState(3);
  
@@ -40,14 +42,14 @@ function App() {
             value: country.countryInfo.iso2,
           }));
         
-        let sortedData = sortData(data);
+        const sortedData = sortData(data);
         setTableData(sortedData);
         setMapCountries(data);
         setCountries(countries);
       })
     };
     getCountriesData();
-  }, []);
+  }, [countries]);
 
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;
@@ -87,22 +89,46 @@ function App() {
             </div>
 
             <div className="app_stats">
-                <InfoBox title="Coronavirus Cases"  total={countryInfo.cases}/>
-
-                <InfoBox title="Recovered" total={countryInfo.recovered}/>
-
-                <InfoBox title="Deaths" total={countryInfo.deaths}/>
+                <InfoBox
+                onClick={(e) => setCasesType("cases")}
+                title="Coronavirus Cases"
+                isRed
+                active={casesType === "cases"}
+                cases={prettyPrintStat(countryInfo.todayCases)}
+                total={numeral(countryInfo.cases).format("0.0a")}
+              />
+              <InfoBox
+                onClick={(e) => setCasesType("recovered")}
+                title="Recovered"
+                active={casesType === "recovered"}
+                cases={prettyPrintStat(countryInfo.todayRecovered)}
+                total={numeral(countryInfo.recovered).format("0.0a")}
+              />
+              <InfoBox
+                onClick={(e) => setCasesType("deaths")}
+                title="Deaths"
+                isRed
+                active={casesType === "deaths"}
+                cases={prettyPrintStat(countryInfo.todayDeaths)}
+                total={numeral(countryInfo.deaths).format("0.0a")}
+              />
             </div>
 
             <div className="app_stats2">
-              <InfoAccodion title="Active" sub_title="Currently active cases" total={countryInfo.active}></InfoAccodion>
-              <InfoAccodion title="Closed" sub_title="Cases with an outcome" total={countryInfo.recovered}></InfoAccodion>
+              <InfoAccodion title="Active" sub_title="Currently active cases" total={countryInfo.active}
+                            left_heading="in Mild Condition" 
+                            right_heading="Serious or Critical" right_total={countryInfo.critical}></InfoAccodion>
+              <InfoAccodion title="Closed" sub_title="Cases with an outcome" total={countryInfo.recovered}
+                            left_heading="Recovered/Discharged"
+                            right_heading="Deaths" right_total={countryInfo.deaths}
+                            ></InfoAccodion>
             </div>
 
             
 
             {/*Map*/}
             <Map 
+              casesType = {casesType}
               countries={mapCountries}
               center={mapCenter}
               zoom = {mapZoom}
@@ -111,13 +137,15 @@ function App() {
 
       </div>
 
-      <Card className="app-right">
+      <Card className="app_right">
         <CardContent>
 
-          {/* TABLE */}
-          <h1>Live Cases by Country</h1>
-          <Table countries={tableData}></Table>
-          <LineGraph/>
+          <div className="app__information">
+            <h3>Live Cases by Country</h3>
+            <Table countries={tableData} />
+            <h3>Worldwide {casesType}</h3>
+            <LineGraph casesType={casesType} />
+          </div>
         </CardContent>
       </Card>
 

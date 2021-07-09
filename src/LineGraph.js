@@ -85,7 +85,6 @@ function LineGraph() {
   
   return (
     <div>
-      <h2>Worldwide New Cases</h2>
       {data.length > 0 && (
         <Line
           data={{
