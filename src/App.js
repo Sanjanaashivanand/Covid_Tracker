@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { MenuItem,FormControl, Select, Card, CardContent} from '@material-ui/core';
 import InfoBox from './InfoBox';
+import InfoAccodion from './InfoAccodion';
 import Table from './Table';
 import Map from './Map';
 import LineGraph from './LineGraph';
 import './App.css';
 import { sortData } from './util';
+import "leaflet/dist/leaflet.css";
 
 
 function App() {
@@ -13,7 +15,11 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide")
   const [countryInfo, setCountryInfo] = useState({});
+  const [mapCountries, setMapCountries] = useState([]);
   const [tableData, setTableData] = useState([]);
+  const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796});
+  const [mapZoom, setMapZoom] = useState(3);
+ 
 
   useEffect(() => {
     fetch('https://disease.sh/v3/covid-19/all')
@@ -34,13 +40,14 @@ function App() {
             value: country.countryInfo.iso2,
           }));
         
-        const sortedData = sortData(data);
+        let sortedData = sortData(data);
         setTableData(sortedData);
+        setMapCountries(data);
         setCountries(countries);
       })
     };
     getCountriesData();
-  }, [countries]);
+  }, []);
 
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;
@@ -55,6 +62,8 @@ function App() {
     .then(data => {
       setCountry(countryCode);
       setCountryInfo(data);
+      setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+      setMapZoom(4);
     })
   }
 
@@ -85,10 +94,19 @@ function App() {
                 <InfoBox title="Deaths" total={countryInfo.deaths}/>
             </div>
 
+            <div className="app_stats2">
+              <InfoAccodion title="Active" sub_title="Currently active cases" total={countryInfo.active}></InfoAccodion>
+              <InfoAccodion title="Closed" sub_title="Cases with an outcome" total={countryInfo.recovered}></InfoAccodion>
+            </div>
+
             
 
             {/*Map*/}
-            <Map></Map>
+            <Map 
+              countries={mapCountries}
+              center={mapCenter}
+              zoom = {mapZoom}
+            />
         
 
       </div>

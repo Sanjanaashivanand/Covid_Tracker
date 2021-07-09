@@ -24,9 +24,24 @@ body{
 
 .app_stats{
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   
 }
+
+.app_stats > *{
+  width: 32%;
+}
+
+.app_stats2{
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.app_stats2 > * {
+  width: 50%;
+}
+
 
 @media (max-width: 990px){
   .app{
@@ -35,4 +50,16 @@ body{
   .app_stats{
     flex-direction: column;
   }
+
+  .app_stats > *{
+    width: 100%;
+  }
+
+  .app_stats2{
+    flex-direction: column;
+  }
+  .app_stats2 > *{
+    width: 100%;
+  }
+
 }
