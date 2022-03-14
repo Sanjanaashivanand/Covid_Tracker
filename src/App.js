@@ -64,7 +64,13 @@ function App() {
     .then(data => {
       setCountry(countryCode);
       setCountryInfo(data);
-      setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+      if(countryCode !== "worldwide" ){
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+      }
+      else{
+        setMapCenter({ lat: 34.80746, lng: -40.4796})
+      }
+        
       setMapZoom(4);
     })
   }
@@ -80,6 +86,7 @@ function App() {
                 <Select varient = "outlined" onChange={onCountryChange} value = {country}>
                       <MenuItem value="worldwide">Worldwide</MenuItem>
                       {
+                        
                         countries.map(country => (
                           <MenuItem value = {country.value}>{country.name}</MenuItem>
                         ))
